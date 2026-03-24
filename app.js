@@ -1,3 +1,6 @@
+
+alert('App.js is loaded!');
+
 // ===== HEALTH TRACKER APP - COMPLETE VERSION =====
 
 // Data Storage
