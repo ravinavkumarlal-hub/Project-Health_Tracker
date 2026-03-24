@@ -1,4 +1,4 @@
-// ===== HEALTH TRACKER APP - MAIN APPLICATION FILE =====
+// ===== HEALTH TRACKER APP - COMPLETE VERSION =====
 
 // Data Storage
 class HealthTrackerStorage {
@@ -137,7 +137,7 @@ class FastingTracker {
                 description: 'Beginner Friendly',
                 stages: {
                     '0-4h': 'Digestion Phase',
-                    '4-8h': 'Early Fat Burn Begins',
+                    '4-8h': 'Early Fat Burn',
                     '8-12h': 'Fat Burn Increases'
                 }
             },
@@ -195,9 +195,7 @@ class WorkoutTracker {
             'Running': 10,
             'Walking': 4,
             'Cycling': 8,
-            'Swimming': 11,
-            'Gym': 7,
-            'Yoga': 3
+            'Gym': 7
         };
         
         const calories = (calorieRates[exerciseType] || 5) * duration;
@@ -257,11 +255,6 @@ class WeightTracker {
         if (data.weight.length === 0) return null;
         return data.weight[data.weight.length - 1].value;
     }
-
-    calculateBMI(weight, height) {
-        const heightInMeters = height / 100;
-        return (weight / (heightInMeters * heightInMeters)).toFixed(1);
-    }
 }
 
 // Heart Rate Monitor
@@ -299,7 +292,7 @@ class AdviceSystem {
         if (steps < 5000) {
             advice.push({ type: 'warning', message: '👟 Try to walk more! Aim for 10,000 steps daily.' });
         } else if (steps >= 10000) {
-            advice.push({ type: 'success', message: '🎉 Great job! You\'ve reached your daily step goal!' });
+            advice.push({ type: 'success', message: '🎉 Great! You\'ve reached your daily step goal!' });
         }
         
         const waterProgress = this.waterTracker.getWaterProgress();
@@ -336,17 +329,9 @@ class NotificationSystem {
             });
         }
     }
-
-    waterReminder() {
-        this.send('💧 Water Reminder', { body: 'Time to drink water! Stay hydrated.' });
-    }
-
-    workoutNotification(workout) {
-        this.send('🏃 Workout Logged', { body: 'Great job on your ' + workout + '!' });
-    }
 }
 
-// Initialize All Trackers
+// ===== INITIALIZE ALL TRACKERS =====
 const stepTracker = new StepTracker();
 const waterTracker = new WaterTracker();
 const calorieTracker = new CalorieTracker();
@@ -363,10 +348,10 @@ const adviceSystem = new AdviceSystem({
     calorieTracker
 });
 
-// UI Functions
+// ===== UI FUNCTIONS =====
 function logStepsCustom() {
     const input = document.getElementById('steps-input');
-    if (input.value) {
+    if (input && input.value) {
         stepTracker.logSteps(input.value);
         updateDashboard();
         input.value = '';
@@ -380,17 +365,9 @@ function addWater(amount) {
     notificationSystem.send('💧 Water Added', { body: amount + 'ml logged!' });
 }
 
-function addWaterCustom() {
-    const input = document.getElementById('water-input');
-    if (input.value) {
-        addWater(input.value);
-        input.value = '';
-    }
-}
-
 function logCaloriesCustom() {
     const input = document.getElementById('calorie-input');
-    if (input.value) {
+    if (input && input.value) {
         calorieTracker.logCalories(input.value, 'Food');
         updateDashboard();
         input.value = '';
@@ -401,19 +378,17 @@ function startFasting() {
     const schedule = document.getElementById('fasting-schedule').value;
     fastingTracker.startFasting(schedule);
     const info = fastingTracker.getFastingInfo(schedule);
-    document.getElementById('fasting-info').innerHTML = `
-        <h4>${schedule} Fasting</h4>
-        <p>${info.description}</p>
-        <ul>
-            ${Object.entries(info.stages).map(([time, stage]) => `<li>${time}: ${stage}</li>`).join('')}
-        </ul>
-    `;
+    const infoBox = document.getElementById('fasting-info');
+    if (infoBox) {
+        infoBox.innerHTML = `
+            <h4>${schedule} Fasting</h4>
+            <p>${info.description}</p>
+            <ul>
+                ${Object.entries(info.stages).map(([time, stage]) => `<li>${time}: ${stage}</li>`).join('')}
+            </ul>
+        `;
+    }
     updateDashboard();
-    notificationSystem.send('⏱️ Fasting Started', { body: 'Fasting schedule: ' + schedule });
-}
-
-function toggleFasting() {
-    startFasting();
 }
 
 function logWorkout() {
@@ -422,7 +397,7 @@ function logWorkout() {
     if (type && duration) {
         workoutTracker.logWorkout(type, parseInt(duration));
         updateDashboard();
-        notificationSystem.workoutNotification(type);
+        notificationSystem.send('🏃 Workout Logged');
         document.getElementById('exercise-type').value = '';
         document.getElementById('workout-duration').value = '';
     }
@@ -442,7 +417,7 @@ function logSleep() {
 
 function logWeight() {
     const input = document.getElementById('weight-input');
-    if (input.value) {
+    if (input && input.value) {
         weightTracker.logWeight(input.value);
         updateDashboard();
         input.value = '';
@@ -451,7 +426,7 @@ function logWeight() {
 
 function logHeartRate() {
     const input = document.getElementById('heart-rate-input');
-    if (input.value) {
+    if (input && input.value) {
         heartRateMonitor.logHeartRate(input.value);
         updateDashboard();
         input.value = '';
@@ -471,6 +446,14 @@ function updateDashboard() {
     const waterBar = document.getElementById('water-progress');
     if (waterBar) waterBar.style.width = Math.min(waterProgress, 100) + '%';
     
+    const calorieProgress = (calorieTracker.getTodayCalories() / calorieTracker.dailyTarget) * 100;
+    const calorieBar = document.getElementById('calories-progress');
+    if (calorieBar) calorieBar.style.width = Math.min(calorieProgress, 100) + '%';
+    
+    const stepProgress = (stepTracker.getTodaySteps() / 10000) * 100;
+    const stepsBar = document.getElementById('steps-progress');
+    if (stepsBar) stepsBar.style.width = Math.min(stepProgress, 100) + '%';
+    
     generateAdviceCards();
 }
 
@@ -486,39 +469,24 @@ function generateAdviceCards() {
     }
 }
 
-function changeView(view) {
-    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-}
-
-// Initialize on Page Load
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tabName = this.getAttribute('data-tab');
-            
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('active');
-            });
-            
-            const tabElement = document.getElementById(tabName);
-            if (tabElement) {
-                tabElement.classList.add('active');
-                this.classList.add('active');
-            }
-        });
+// ===== TAB NAVIGATION =====
+function switchTab(tabName) {
+    // Hide all tabs
+    const allTabs = document.querySelectorAll('.tab-content');
+    allTabs.forEach(tab => {
+        tab.classList.remove('active');
     });
     
-    updateDashboard();
+    // Remove active class from all buttons
+    const allBtns = document.querySelectorAll('.nav-btn');
+    allBtns.forEach(btn => {
+        btn.classList.remove('active');
+    });
     
-    // Water reminder every 2 hours
-    setInterval(() => {
-        notificationSystem.waterReminder();
-    }, 2 * 60 * 60 * 1000);
-});
-
-console.log('✅ Health Tracker App Ready!');
+    // Show selected tab
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    `*
+
