@@ -3,81 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Tracker PWA</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Health Tracker</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="app.js" defer></script>
 </head>
 <body>
     <header>
-        <h1>Health Tracker</h1>
+        <nav>
+            <ul>
+                <li><a href="#step-tracking">Step Tracking</a></li>
+                <li><a href="#water-intake">Water Intake</a></li>
+                <li><a href="#calorie-tracking">Calorie Tracking</a></li>
+                <li><a href="#fasting-tracker">Fasting Tracker</a></li>
+                <li><a href="#workout-logging">Workout Logging</a></li>
+                <li><a href="#sleep-tracking">Sleep Tracking</a></li>
+                <li><a href="#weight-tracking">Weight Tracking</a></li>
+                <li><a href="#heart-rate-monitoring">Heart Rate Monitoring</a></li>
+                <li><a href="#progress-graphs">Progress Graphs</a></li>
+                <li><a href="#advice-system">Advice System</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
-        <div id="dashboard">
-            <h2>Dashboard</h2>
-            <div id="graphs">
-                <!-- Graphs for week/month views will be rendered here -->
-            </div>
-            <div id="advice-system">
-                <!-- Rule-based advice will be generated here -->
-            </div>
-        </div>
         <section id="step-tracking">
-            <h3>Step Tracker</h3>
-            <div>
-                <button id="track-steps">Track Steps</button>
-            </div>
+            <h2>Step Tracking</h2>
+            <p>Track your daily steps.</p>
+            <!-- Include interface for step tracking -->
         </section>
-        <section id="water-tracking">
-            <h3>Water Intake</h3>
-            <div>
-                <button onclick="addWater(50)">50ml</button>
-                <button onclick="addWater(300)">300ml</button>
-            </div>
+        <section id="water-intake">
+            <h2>Water Intake</h2>
+            <p>Monitor your daily water consumption.</p>
+            <!-- Include interface for water intake tracking -->
         </section>
         <section id="calorie-tracking">
-            <h3>Calorie Tracker</h3>
-            <input type="number" id="calories" placeholder="Enter calories" />
+            <h2>Calorie Tracking</h2>
+            <p>Keep tabs on your calorie intake.</p>
+            <!-- Include interface for calorie tracking -->
         </section>
         <section id="fasting-tracker">
-            <h3>Fasting Tracker</h3>
-            <div>
-                <select id="fasting-options">
-                    <option value="12:12">12:12</option>
-                    <option value="16:8">16:8</option>
-                    <option value="20:4">20:4</option>
-                </select>
-                <button id="start-fasting">Start Fasting</button>
-            </div>
+            <h2>Fasting Tracker</h2>
+            <p>Manage your fasting schedule.</p>
+            <!-- Include interface for fasting tracking -->
         </section>
         <section id="workout-logging">
-            <h3>Workout Logging</h3>
-            <button id="log-workout">Log Workout</button>
+            <h2>Workout Logging</h2>
+            <p>Log your workouts and fitness activities.</p>
+            <!-- Include interface for workout logging -->
         </section>
         <section id="sleep-tracking">
-            <h3>Sleep Tracking</h3>
-            <button id="track-sleep">Track Sleep</button>
+            <h2>Sleep Tracking</h2>
+            <p>Monitor your sleep patterns.</p>
+            <!-- Include interface for sleep tracking -->
         </section>
         <section id="weight-tracking">
-            <h3>Weight Tracking</h3>
-            <input type="number" id="weight" placeholder="Enter weight" />
+            <h2>Weight Tracking</h2>
+            <p>Track your weight over time.</p>
+            <!-- Include interface for weight tracking -->
         </section>
         <section id="heart-rate-monitoring">
-            <h3>Heart Rate Monitoring</h3>
-            <input type="number" id="heart-rate" placeholder="Enter heart rate" />
+            <h2>Heart Rate Monitoring</h2>
+            <p>Keep an eye on your heart rate.</p>
+            <!-- Include interface for heart rate monitoring -->
+        </section>
+        <section id="progress-graphs">
+            <h2>Progress Graphs</h2>
+            <p>Visualize your health data.</p>
+            <!-- Include interface for progress graphs -->
+        </section>
+        <section id="advice-system">
+            <h2>Advice System</h2>
+            <p>Receive health and fitness advice.</p>
+            <!-- Include interface for advice system -->
         </section>
     </main>
     <footer>
-        <p>Health Tracker PWA - Your personal health assistant</p>
+        <p>&copy; 2026 Health Tracker</p>
     </footer>
 </body>
 </html>
-
-<script>
-// JavaScript for functionality
-function addWater(amount) {
-    // Logic to add water intake
-    alert(`Added ${amount}ml of water.`);
-    // Update localStorage
-}
-</script>
