@@ -122,11 +122,11 @@ class CalorieTracker {
     getCalorieStatus() {
         const consumed = this.getTodayCalories();
         if (consumed > this.dailyTarget * 1.1) {
-            return { status: 'high', message: '⚠️ You\'ve exceeded your calorie target!' };
+            return { status: 'high', message: '⚠️ You exceeded calorie target!' };
         } else if (consumed < this.dailyTarget * 0.8) {
-            return { status: 'low', message: '🍽️ Eat more to meet your calorie goal!' };
+            return { status: 'low', message: '🍽️ Eat more to meet goal!' };
         }
-        return { status: 'good', message: '✅ You\'re on track!' };
+        return { status: 'good', message: '✅ You are on track!' };
     }
 }
 
@@ -135,42 +135,10 @@ class FastingTracker {
     constructor() {
         this.storage = new HealthTrackerStorage();
         this.fastingSchedules = {
-            '12:12': {
-                hours: 12,
-                description: 'Beginner Friendly',
-                stages: {
-                    '0-4h': 'Digestion Phase',
-                    '4-8h': 'Early Fat Burn',
-                    '8-12h': 'Fat Burn Increases'
-                }
-            },
-            '14:10': {
-                hours: 14,
-                description: 'Moderate',
-                stages: {
-                    '0-4h': 'Digestion Phase',
-                    '4-8h': 'Fat Burn Begins',
-                    '8-14h': 'Deep Fat Burn'
-                }
-            },
-            '16:8': {
-                hours: 16,
-                description: 'Most Popular',
-                stages: {
-                    '0-4h': 'Digestion Phase',
-                    '4-8h': 'Fat Burn Begins',
-                    '8-16h': 'Ketosis & Fat Burn'
-                }
-            },
-            '20:4': {
-                hours: 20,
-                description: 'Advanced',
-                stages: {
-                    '0-4h': 'Digestion Phase',
-                    '4-8h': 'Fat Burn',
-                    '8-20h': 'Deep Ketosis & Autophagy'
-                }
-            }
+            '12:12': { hours: 12, description: 'Beginner Friendly' },
+            '14:10': { hours: 14, description: 'Moderate' },
+            '16:8': { hours: 16, description: 'Most Popular' },
+            '20:4': { hours: 20, description: 'Advanced' }
         };
     }
 
@@ -198,7 +166,9 @@ class WorkoutTracker {
             'Running': 10,
             'Walking': 4,
             'Cycling': 8,
-            'Gym': 7
+            'Swimming': 11,
+            'Gym': 7,
+            'Yoga': 3
         };
         
         const calories = (calorieRates[exerciseType] || 5) * duration;
@@ -258,6 +228,11 @@ class WeightTracker {
         if (data.weight.length === 0) return null;
         return data.weight[data.weight.length - 1].value;
     }
+
+    calculateBMI(weight, height) {
+        const heightInMeters = height / 100;
+        return (weight / (heightInMeters * heightInMeters)).toFixed(1);
+    }
 }
 
 // Heart Rate Monitor
@@ -278,6 +253,19 @@ class HeartRateMonitor {
         const avg = entries.reduce((sum, entry) => sum + entry.value, 0) / entries.length;
         return Math.round(avg);
     }
+
+    getHeartRateStatus(age = 30) {
+        const rate = this.getTodayHeartRate();
+        if (!rate) return { status: 'unknown', message: 'No data' };
+        
+        const maxHR = 220 - age;
+        if (rate < 60) {
+            return { status: 'low', message: 'Heart rate is low. Rest well!' };
+        } else if (rate > maxHR * 0.9) {
+            return { status: 'high', message: 'Heart rate is high. Cool down!' };
+        }
+        return { status: 'normal', message: 'Heart rate is normal!' };
+    }
 }
 
 // Advice System
@@ -295,14 +283,14 @@ class AdviceSystem {
         if (steps < 5000) {
             advice.push({ type: 'warning', message: '👟 Try to walk more! Aim for 10,000 steps daily.' });
         } else if (steps >= 10000) {
-            advice.push({ type: 'success', message: '🎉 Great! You\'ve reached your daily step goal!' });
+            advice.push({ type: 'success', message: '🎉 Great! You reached your step goal!' });
         }
         
         const waterProgress = this.waterTracker.getWaterProgress();
         if (waterProgress < 50) {
-            advice.push({ type: 'warning', message: '💧 Drink more water! You\'re at ' + waterProgress + '% of goal.' });
+            advice.push({ type: 'warning', message: '💧 Drink more water! You are at ' + waterProgress + '% of goal.' });
         } else if (waterProgress >= 100) {
-            advice.push({ type: 'success', message: '💧 Excellent! Daily water intake goal met!' });
+            advice.push({ type: 'success', message: '💧 Excellent! Daily water goal met!' });
         }
         
         const calorieStatus = this.calorieTracker.getCalorieStatus();
@@ -352,20 +340,29 @@ const adviceSystem = new AdviceSystem({
 });
 
 // ===== UI FUNCTIONS =====
+
 function logStepsCustom() {
     const input = document.getElementById('steps-input');
     if (input && input.value) {
         stepTracker.logSteps(input.value);
         updateDashboard();
+        alert('✅ Steps logged: ' + input.value);
         input.value = '';
-        notificationSystem.send('✅ Steps Logged');
     }
 }
 
 function addWater(amount) {
     waterTracker.addWater(amount);
     updateDashboard();
-    notificationSystem.send('💧 Water Added', { body: amount + 'ml logged!' });
+    alert('💧 Water logged: ' + amount + 'ml');
+}
+
+function addWaterCustom() {
+    const input = document.getElementById('water-input');
+    if (input && input.value) {
+        addWater(input.value);
+        input.value = '';
+    }
 }
 
 function logCaloriesCustom() {
@@ -373,8 +370,14 @@ function logCaloriesCustom() {
     if (input && input.value) {
         calorieTracker.logCalories(input.value, 'Food');
         updateDashboard();
+        alert('🍽️ Calories logged: ' + input.value);
         input.value = '';
     }
+}
+
+function searchFood() {
+    const input = document.getElementById('food-input').value;
+    console.log('Searching for:', input);
 }
 
 function startFasting() {
@@ -386,12 +389,14 @@ function startFasting() {
         infoBox.innerHTML = `
             <h4>${schedule} Fasting</h4>
             <p>${info.description}</p>
-            <ul>
-                ${Object.entries(info.stages).map(([time, stage]) => `<li>${time}: ${stage}</li>`).join('')}
-            </ul>
         `;
     }
     updateDashboard();
+    alert('⏱️ Fasting started: ' + schedule);
+}
+
+function toggleFasting() {
+    startFasting();
 }
 
 function logWorkout() {
@@ -400,7 +405,7 @@ function logWorkout() {
     if (type && duration) {
         workoutTracker.logWorkout(type, parseInt(duration));
         updateDashboard();
-        notificationSystem.send('🏃 Workout Logged');
+        alert('🏃 Workout logged: ' + type + ' for ' + duration + ' mins!');
         document.getElementById('exercise-type').value = '';
         document.getElementById('workout-duration').value = '';
     }
@@ -412,7 +417,7 @@ function logSleep() {
     if (bedtime && wakeup) {
         sleepTracker.logSleep(bedtime, wakeup);
         updateDashboard();
-        notificationSystem.send('😴 Sleep Logged');
+        alert('😴 Sleep logged!');
         document.getElementById('bedtime').value = '';
         document.getElementById('wakeup').value = '';
     }
@@ -423,6 +428,7 @@ function logWeight() {
     if (input && input.value) {
         weightTracker.logWeight(input.value);
         updateDashboard();
+        alert('⚖️ Weight logged: ' + input.value + ' kg');
         input.value = '';
     }
 }
@@ -432,6 +438,7 @@ function logHeartRate() {
     if (input && input.value) {
         heartRateMonitor.logHeartRate(input.value);
         updateDashboard();
+        alert('❤️ Heart rate logged: ' + input.value + ' bpm');
         input.value = '';
     }
 }
@@ -472,6 +479,13 @@ function generateAdviceCards() {
     }
 }
 
+function changeView(view) {
+    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+}
+
 // ===== TAB NAVIGATION =====
 function switchTab(tabName) {
     // Hide all tabs
@@ -491,5 +505,31 @@ function switchTab(tabName) {
     if (selectedTab) {
         selectedTab.classList.add('active');
     }
-    `*
-
+    
+    // Mark button as active
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+}
+
+// ===== INITIALIZE APP =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up tab navigation
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+    
+    // Update dashboard on load
+    updateDashboard();
+    
+    // Set up periodic water reminder (every 2 hours)
+    setInterval(() => {
+        notificationSystem.send('💧 Water Reminder', { body: 'Time to drink water!' });
+    }, 2 * 60 * 60 * 1000);
+    
+    console.log('✅ Health Tracker App Initialized Successfully!');
+});
