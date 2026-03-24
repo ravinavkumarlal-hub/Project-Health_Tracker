@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Tracker PWA</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Health Tracker</h1>
+    </header>
+    <main>
+        <div id="dashboard">
+            <h2>Dashboard</h2>
+            <div id="graphs">
+                <!-- Graphs for week/month views will be rendered here -->
+            </div>
+            <div id="advice-system">
+                <!-- Rule-based advice will be generated here -->
+            </div>
+        </div>
+        <section id="step-tracking">
+            <h3>Step Tracker</h3>
+            <div>
+                <button id="track-steps">Track Steps</button>
+            </div>
+        </section>
+        <section id="water-tracking">
+            <h3>Water Intake</h3>
+            <div>
+                <button onclick="addWater(50)">50ml</button>
+                <button onclick="addWater(300)">300ml</button>
+            </div>
+        </section>
+        <section id="calorie-tracking">
+            <h3>Calorie Tracker</h3>
+            <input type="number" id="calories" placeholder="Enter calories" />
+        </section>
+        <section id="fasting-tracker">
+            <h3>Fasting Tracker</h3>
+            <div>
+                <select id="fasting-options">
+                    <option value="12:12">12:12</option>
+                    <option value="16:8">16:8</option>
+                    <option value="20:4">20:4</option>
+                </select>
+                <button id="start-fasting">Start Fasting</button>
+            </div>
+        </section>
+        <section id="workout-logging">
+            <h3>Workout Logging</h3>
+            <button id="log-workout">Log Workout</button>
+        </section>
+        <section id="sleep-tracking">
+            <h3>Sleep Tracking</h3>
+            <button id="track-sleep">Track Sleep</button>
+        </section>
+        <section id="weight-tracking">
+            <h3>Weight Tracking</h3>
+            <input type="number" id="weight" placeholder="Enter weight" />
+        </section>
+        <section id="heart-rate-monitoring">
+            <h3>Heart Rate Monitoring</h3>
+            <input type="number" id="heart-rate" placeholder="Enter heart rate" />
+        </section>
+    </main>
+    <footer>
+        <p>Health Tracker PWA - Your personal health assistant</p>
+    </footer>
+</body>
+</html>
+
+<script>
+// JavaScript for functionality
+function addWater(amount) {
+    // Logic to add water intake
+    alert(`Added ${amount}ml of water.`);
+    // Update localStorage
+}
+</script>
